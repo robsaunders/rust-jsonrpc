@@ -12,7 +12,7 @@ extern crate jsonrpc;
 extern crate serde;
 #[macro_use] extern crate serde_derive;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct MyStruct {
     elem1: bool,
     elem2: String,
@@ -21,13 +21,11 @@ struct MyStruct {
 
 fn main() {
     // The two Nones are for user/pass for authentication
-    let mut client = jsonrpc::client::Client::new("example.org".to_owned(), None, None);
-    let request = client.build_request("getmystruct".to_owned(), vec![]);
-    match client.send_request(&request).and_then(|res| res.into_result::<MyStruct>()) {
-        Ok(mystruct) => // Ok!
-        Err(e) => // Not so much.
+    let client = jsonrpc::client::Client::new(String::from("localhost"), None, None);
+    let request = &client.build_request("getmystruct", &[]);
+    match client.send_request(request).and_then(|res| res.into_result::<MyStruct>()) {
+        Ok(resp) => println!("response recieved: {:?}", resp),
+        Err(e) => println!("error: {:?}", e),
     }
 }
-
 ```
-
